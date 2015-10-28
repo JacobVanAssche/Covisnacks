@@ -65,7 +65,7 @@ while True:
 
 
 	average_measurement = sum / num_measurements
-	_eventMessage = {"distance":average_measurements}
+	_eventMessage = {"distance":average_measurement}
 	encodedMsg = base64.b64encode(str(_eventMessage).encode())
 
 	sendEventMessageObj = {
