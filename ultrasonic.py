@@ -1,6 +1,10 @@
 import RPi.GPIO as GPIO
 import time
 import paho.mqtt.client as mqtt
+import random
+import base64
+import ssl
+import json
 
 GPIO.setmode(GPIO.BCM)
 
@@ -24,10 +28,11 @@ def on_log(pahoClient, obj, level, string):
 
 username = "005e04fe-deb5-4520-ae2d-6d54b3aa57ff"
 password = "b4ec9ccb-e5b9-4a68-ba47-b144b7e3eff4"
+Qos=0
 
 mqttc = mqtt.Client("390EdA9dEC364bcBb673")
 mqttc.username_pw_set(username, password)
-mqttc.tls_set("/etc/ssl/certs/ca-certificates.crt")
+mqttc.tls_set("/etc/ssl/certs/ca-certificates.crt",certfile=None, keyfile=None, cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLSv1, ciphers=None)
 mqttc.on_connect = on_connect
 mqttc.on_log = on_log
 mqttc.connect("mqtt.covapp.io",8883, 60)
@@ -54,12 +59,24 @@ while True:
 		
 		if distance < 20:
 			num_measurements = num_measurements + 1
-			sum = sum + distance
+		sum = sum + distance
 
 		print "Distance:",distance,"cm"
 		time.sleep(2)
-		mqttc.publish("4c7489ed-92c0-4e05-a23d-12cdf514fc6a", distance)
+
+
 	average_measurement = sum / num_measurements
-	mqttc.publish("4c7489ed-92c0-4e05-a23d-12cdf514fc6a", average_measurement)
+	_randomMessageId = random_message_id()
+	_eventMessage = {"distance":average_measurements}
+	encodedMsg = base64.b64encode(str(_eventMessage).encode())
+
+	sendEventMessageObj = {
+	        	"messageId":_randomMessageId,
+		        "deviceId":"7e731ef0-28e3-49f4-bb1e-5da836a3a54d",
+			"eventTemplateId":"ec4c75f5-7085-4f7a-9bc9-cfb853858889",
+			"message": encodedMsg,
+			"encodingType": "base64",
+			}
+	mqttc.publish("4c7489ed-92c0-4e05-a23d-12cdf514fc6a", sendEventMessageObj, Qos, retain=False)
 	print "Average Distance: ",average_measurement
 GPIO.cleanup()
