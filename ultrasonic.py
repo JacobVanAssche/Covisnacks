@@ -1,7 +1,6 @@
 import RPi.GPIO as GPIO
 import time
 import paho.mqtt.client as mqtt
-import random
 import base64
 import ssl
 import json
@@ -66,13 +65,12 @@ while True:
 
 
 	average_measurement = sum / num_measurements
-	_randomMessageId = random_message_id()
 	_eventMessage = {"distance":average_measurements}
 	encodedMsg = base64.b64encode(str(_eventMessage).encode())
 
 	sendEventMessageObj = {
-	        	"messageId":_randomMessageId,
-		        "deviceId":"7e731ef0-28e3-49f4-bb1e-5da836a3a54d",
+		        "messageId": "covsiotprodiotval{{$timestamp}}",
+			"deviceId":"7e731ef0-28e3-49f4-bb1e-5da836a3a54d",
 			"eventTemplateId":"ec4c75f5-7085-4f7a-9bc9-cfb853858889",
 			"message": encodedMsg,
 			"encodingType": "base64",
