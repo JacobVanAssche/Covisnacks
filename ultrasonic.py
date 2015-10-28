@@ -75,6 +75,6 @@ while True:
 			"message": encodedMsg,
 			"encodingType": "base64",
 			}
-	mqttc.publish("4c7489ed-92c0-4e05-a23d-12cdf514fc6a", sendEventMessageObj, Qos, retain=False)
+	mqttc.publish("4c7489ed-92c0-4e05-a23d-12cdf514fc6a", str(sendEventMessageObj), Qos, retain=False)
 	print "Average Distance: ",average_measurement
 GPIO.cleanup()
